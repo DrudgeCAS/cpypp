@@ -9,6 +9,8 @@ on:
 jobs:
   test_debug:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     container:
       image: tschijnmo/drudge:base
     
@@ -28,6 +30,8 @@ jobs:
 
   test_release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     container:
       image: tschijnmo/drudge:base
     

@@ -1,4 +1,4 @@
-[![Build Status](https://circleci.com/gh/tschijnmo/cpypp.svg?style=shield)](https://circleci.com/gh/tschijnmo/cpypp)
+[![CI](https://github.com/DrudgeCAS/cpypp/actions/workflows/ci.yml/badge.svg)](https://github.com/DrudgeCAS/cpypp/actions/workflows/ci.yml)
 
 # cpypp
 

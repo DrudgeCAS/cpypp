@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - 'release/*'
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  test_debug:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: tschijnmo/drudge:base
+    
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      
+      - name: Build and test (debug)
+        run: |
+          mkdir cmake-test-debug
+          cd cmake-test-debug
+          cmake -DCMAKE_BUILD_TYPE=debug ..
+          make
+          ./test/testmain
+
+  test_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: tschijnmo/drudge:base
+    
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      
+      - name: Build and test (release)
+        run: |
+          mkdir cmake-test-release
+          cd cmake-test-release
+          cmake -DCMAKE_BUILD_TYPE=release ..
+          make
+          ./test/testmain

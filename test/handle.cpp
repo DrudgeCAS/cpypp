@@ -24,7 +24,7 @@ TEST_CASE("Owning handles correctly manages reference counts", "[Handle]")
     // Large integers are used, since small integers are cached by CPython
     // and immortal from Python 3.12 on, where their reference count never
     // moves.  These two are fresh objects whose count we fully control.
-    PyObject* one = Py_BuildValue("l", 1L << 40);
+    PyObject* one = Py_BuildValue("L", static_cast<long long>(1) << 40);
     // Py_BuildValue gives a new reference to be possibly stolen by
     // Handles.  Here we increment the reference count again to make sure
     // that even after that reference is destroyed, we still have at least
@@ -32,7 +32,7 @@ TEST_CASE("Owning handles correctly manages reference counts", "[Handle]")
     Py_INCREF(one);
     Py_ssize_t init_count = Py_REFCNT(one);
 
-    PyObject* two = Py_BuildValue("l", 1L << 41);
+    PyObject* two = Py_BuildValue("L", static_cast<long long>(1) << 41);
     Py_INCREF(two); // For the same rational as one.
     Py_ssize_t init_count2 = Py_REFCNT(two);
 
@@ -352,8 +352,8 @@ TEST_CASE("Borrowing handles correctly treats reference counts", "[Handle]")
 {
     // Testing of borrowing handles is relatively easy, no matter what
     // happens, the reference count should never be touched.
-    PyObject* one = Py_BuildValue("l", 1L << 40);
-    PyObject* two = Py_BuildValue("l", 1L << 41);
+    PyObject* one = Py_BuildValue("L", static_cast<long long>(1) << 40);
+    PyObject* two = Py_BuildValue("L", static_cast<long long>(1) << 41);
     Py_ssize_t init_count = Py_REFCNT(one);
     Py_ssize_t init_count2 = Py_REFCNT(two);
     auto check_ref = [&]() {

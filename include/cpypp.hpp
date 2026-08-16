@@ -636,11 +636,11 @@ private:
         }
     }
 
-    /** Increments the reference count only for owning reference to a non-null.
+    /** Increments the reference count for an owning reference, if not null.
      *
      * An owning handle can hold a null pointer, for instance the value of an
-     * exhausted `Iter_handle`, so this has to tolerate null in the same way as
-     * `decr_ref` does.
+     * exhausted `Iter_handle`, so null is tolerated here just as it is in
+     * `decr_ref`.
      */
 
     void incr_ref() noexcept

@@ -1,7 +1,7 @@
 /** Tests for the utility for fundamental objects.
  */
 
-#include <catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <Python.h>
 
@@ -77,7 +77,11 @@ TEST_CASE("Trivial static type has basic features", "[Handle][Static_type]")
             auto handle = noddy_type.get_handle(true);
             CHECK(handle.get() == noddy_ptr);
             CHECK(!handle.if_borrow());
-            CHECK(Py_REFCNT(noddy_ptr) == init_count + 1);
+            // Static types are immortal from Python 3.12 on, and then their
+            // reference count does not move.
+            if (init_count < (static_cast<Py_ssize_t>(1) << 30)) {
+                CHECK(Py_REFCNT(noddy_ptr) == init_count + 1);
+            }
         }
         CHECK(Py_REFCNT(noddy_ptr) == init_count);
     }

@@ -5,13 +5,20 @@
  * objects.
  */
 
-#include <catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <Python.h>
 
 #include <cpypp.hpp>
 
 using namespace cpypp;
+
+// Small integers are immortal from Python 3.12 on, and the reference count of
+// an immortal object does not move.  Their count is only checked when it can.
+static bool count_moves(PyObject* obj)
+{
+    return Py_REFCNT(obj) < (static_cast<Py_ssize_t>(1) << 30);
+}
 
 TEST_CASE("General utility can make and parse simple integers", "[Handle]")
 {
@@ -26,7 +33,9 @@ TEST_CASE("General utility can make and parse simple integers", "[Handle]")
     {
         Handle from_gen("i", 1);
         CHECK(from_gen.get() == one);
-        CHECK(Py_REFCNT(one) == curr_count + 1);
+        if (count_moves(one)) {
+            CHECK(Py_REFCNT(one) == curr_count + 1);
+        }
 
         long val;
         from_gen.as(val);

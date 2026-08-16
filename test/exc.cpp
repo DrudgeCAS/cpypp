@@ -1,7 +1,7 @@
 /** Tests for the utilities related to Python exception handling.
  */
 
-#include <catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <Python.h>
 

@@ -1,9 +1,13 @@
-# Download the Catch2 single header.
+# Fetch Catch2 v3.11.0
+include(FetchContent)
 
-file(DOWNLOAD
-    "https://github.com/catchorg/Catch2/releases/download/v2.0.1/catch.hpp"
-    "${CMAKE_CURRENT_BINARY_DIR}/catch.hpp"
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.11.0
 )
+
+FetchContent_MakeAvailable(Catch2)
 
 # The main test driver.
 add_executable(testmain
@@ -21,11 +25,9 @@ add_executable(testmain
 )
 
 target_include_directories(testmain
-    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
     PRIVATE "${PROJECT_SOURCE_DIR}/include"
-    PRIVATE ${PYTHON_INCLUDE_DIRS}
 )
 target_link_libraries(testmain
-    PRIVATE ${PYTHON_LIBRARIES}
+    PRIVATE Catch2::Catch2
+    PRIVATE Python3::Python
 )
-

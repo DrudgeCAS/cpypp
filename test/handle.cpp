@@ -11,7 +11,7 @@
 
 #include <memory>
 
-#include <catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <Python.h>
 
@@ -21,17 +21,18 @@ using namespace cpypp;
 
 TEST_CASE("Owning handles correctly manages reference counts", "[Handle]")
 {
-    PyObject* one = Py_BuildValue("i", 1);
+    // Large integers are used, since small integers are cached by CPython
+    // and immortal from Python 3.12 on, where their reference count never
+    // moves.  These two are fresh objects whose count we fully control.
+    PyObject* one = Py_BuildValue("l", 1L << 40);
     // Py_BuildValue gives a new reference to be possibly stolen by
     // Handles.  Here we increment the reference count again to make sure
     // that even after that reference is destroyed, we still have at least
-    // one reference.  Practically this is unnecessary in that the integer
-    // unity normally has hundreds of references to prevent it from being
-    // collected.
+    // one reference.
     Py_INCREF(one);
     Py_ssize_t init_count = Py_REFCNT(one);
 
-    PyObject* two = Py_BuildValue("i", 2);
+    PyObject* two = Py_BuildValue("l", 1L << 41);
     Py_INCREF(two); // For the same rational as one.
     Py_ssize_t init_count2 = Py_REFCNT(two);
 
@@ -351,8 +352,8 @@ TEST_CASE("Borrowing handles correctly treats reference counts", "[Handle]")
 {
     // Testing of borrowing handles is relatively easy, no matter what
     // happens, the reference count should never be touched.
-    PyObject* one = Py_BuildValue("i", 1);
-    PyObject* two = Py_BuildValue("i", 2);
+    PyObject* one = Py_BuildValue("l", 1L << 40);
+    PyObject* two = Py_BuildValue("l", 1L << 41);
     Py_ssize_t init_count = Py_REFCNT(one);
     Py_ssize_t init_count2 = Py_REFCNT(two);
     auto check_ref = [&]() {

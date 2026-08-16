@@ -54,6 +54,37 @@ TEST_CASE("Handles has basic iterator protocol", "[Handle][Iter_handle]")
     }
 }
 
+TEST_CASE("Iterators over empty iterables can be copied", "[Handle][Iter_handle]")
+{
+    // An exhausted iterator holds an owning null handle as its value.  Copying
+    // it used to increment the reference count of the null pointer.
+    Handle empty("[]");
+
+    SECTION("an exhausted iterator can be copied")
+    {
+        auto it = empty.begin();
+        check_exc();
+        REQUIRE_FALSE(it.has_val());
+        Iter_handle copy(it);
+        CHECK_FALSE(copy.has_val());
+        CHECK(copy == empty.end());
+    }
+
+    SECTION("a container can be built from an empty iterable")
+    {
+        std::vector<Handle> res(empty.begin(), empty.end());
+        check_exc();
+        CHECK(res.empty());
+    }
+
+    SECTION("an owning null handle can be copied")
+    {
+        Handle null(nullptr, STEAL, true);
+        Handle copy(null);
+        CHECK_FALSE(copy);
+    }
+}
+
 TEST_CASE("Iterator utilities report wrong types", "[Handle][Iter_handle]")
 {
     // A non-iterable and non-iterator integer.

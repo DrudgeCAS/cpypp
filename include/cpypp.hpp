@@ -636,13 +636,17 @@ private:
         }
     }
 
-    /** Increments the reference count only for owning reference.
+    /** Increments the reference count only for owning reference to a non-null.
+     *
+     * An owning handle can hold a null pointer, for instance the value of an
+     * exhausted `Iter_handle`, so this has to tolerate null in the same way as
+     * `decr_ref` does.
      */
 
     void incr_ref() noexcept
     {
         if (!if_borrow_) {
-            Py_INCREF(ref_);
+            Py_XINCREF(ref_);
         }
     }
 
